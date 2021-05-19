@@ -2,9 +2,11 @@
 // Copyright (C) 2020-2021.violet-team. Licensed under the Apache-2.0 License.
 
 import 'dart:collection';
+import 'dart:io';
 import 'dart:math';
 
 import 'package:auto_animated/auto_animated.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
 import 'package:provider/provider.dart';
@@ -423,57 +425,103 @@ class _GroupArticleListPageState extends State<GroupArticleListPage> {
             onLongPress: () {
               if (checkMode) return;
               isFilterUsed = true;
-              Navigator.of(context)
-                  .push(PageRouteBuilder(
-                // opaque: false,
-                transitionDuration: Duration(milliseconds: 500),
-                transitionsBuilder: (BuildContext context,
-                    Animation<double> animation,
-                    Animation<double> secondaryAnimation,
-                    Widget wi) {
-                  return new FadeTransition(opacity: animation, child: wi);
-                },
-                pageBuilder: (_, __, ___) => BookmarkSearchSort(
-                  queryResult: queryResult,
-                  tagStates: tagStates,
-                  groupStates: groupStates,
-                  isOr: isOr,
-                  isSearch: isSearch,
-                ),
-              ))
-                  .then((value) async {
-                tagStates = value[0];
-                groupStates = value[1];
-                isOr = value[2];
-                var result = List<QueryResult>();
-                queryResult.forEach((element) {
-                  var succ = !isOr;
-                  tagStates.forEach((key, value) {
-                    if (!value) return;
-                    if (succ == isOr) return;
-                    var split = key.split('|');
-                    var kk = prefix2Tag(split[0]);
-                    if (element.result[kk] == null && !isOr) {
-                      succ = false;
-                      return;
-                    }
-                    if (!isSingleTag(split[0])) {
-                      var tt = split[1];
-                      if (split[0] == 'female' || split[0] == 'male')
-                        tt = split[0] + ':' + split[1];
-                      if ((element.result[kk] as String)
-                              .contains('|' + tt + '|') ==
+              if (!Platform.isIOS) {
+                Navigator.of(context)
+                    .push(PageRouteBuilder(
+                  // opaque: false,
+                  transitionDuration: Duration(milliseconds: 500),
+                  transitionsBuilder: (BuildContext context,
+                      Animation<double> animation,
+                      Animation<double> secondaryAnimation,
+                      Widget wi) {
+                    return new FadeTransition(opacity: animation, child: wi);
+                  },
+                  pageBuilder: (_, __, ___) => BookmarkSearchSort(
+                    queryResult: queryResult,
+                    tagStates: tagStates,
+                    groupStates: groupStates,
+                    isOr: isOr,
+                    isSearch: isSearch,
+                  ),
+                ))
+                    .then((value) async {
+                  tagStates = value[0];
+                  groupStates = value[1];
+                  isOr = value[2];
+                  var result = List<QueryResult>();
+                  queryResult.forEach((element) {
+                    var succ = !isOr;
+                    tagStates.forEach((key, value) {
+                      if (!value) return;
+                      if (succ == isOr) return;
+                      var split = key.split('|');
+                      var kk = prefix2Tag(split[0]);
+                      if (element.result[kk] == null && !isOr) {
+                        succ = false;
+                        return;
+                      }
+                      if (!isSingleTag(split[0])) {
+                        var tt = split[1];
+                        if (split[0] == 'female' || split[0] == 'male')
+                          tt = split[0] + ':' + split[1];
+                        if ((element.result[kk] as String)
+                                .contains('|' + tt + '|') ==
+                            isOr) succ = isOr;
+                      } else if ((element.result[kk] as String == split[1]) ==
                           isOr) succ = isOr;
-                    } else if ((element.result[kk] as String == split[1]) ==
-                        isOr) succ = isOr;
+                    });
+                    if (succ) result.add(element);
                   });
-                  if (succ) result.add(element);
+                  filterResult = result;
+                  await Future.delayed(Duration(milliseconds: 50), () {
+                    setState(() {});
+                  });
                 });
-                filterResult = result;
-                await Future.delayed(Duration(milliseconds: 50), () {
-                  setState(() {});
+              } else {
+                Navigator.of(context)
+                    .push(CupertinoPageRoute(
+                  builder: (_) => BookmarkSearchSort(
+                    queryResult: queryResult,
+                    tagStates: tagStates,
+                    groupStates: groupStates,
+                    isOr: isOr,
+                    isSearch: isSearch,
+                  ),
+                ))
+                    .then((value) async {
+                  tagStates = value[0];
+                  groupStates = value[1];
+                  isOr = value[2];
+                  var result = List<QueryResult>();
+                  queryResult.forEach((element) {
+                    var succ = !isOr;
+                    tagStates.forEach((key, value) {
+                      if (!value) return;
+                      if (succ == isOr) return;
+                      var split = key.split('|');
+                      var kk = prefix2Tag(split[0]);
+                      if (element.result[kk] == null && !isOr) {
+                        succ = false;
+                        return;
+                      }
+                      if (!isSingleTag(split[0])) {
+                        var tt = split[1];
+                        if (split[0] == 'female' || split[0] == 'male')
+                          tt = split[0] + ':' + split[1];
+                        if ((element.result[kk] as String)
+                                .contains('|' + tt + '|') ==
+                            isOr) succ = isOr;
+                      } else if ((element.result[kk] as String == split[1]) ==
+                          isOr) succ = isOr;
+                    });
+                    if (succ) result.add(element);
+                  });
+                  filterResult = result;
+                  await Future.delayed(Duration(milliseconds: 50), () {
+                    setState(() {});
+                  });
                 });
-              });
+              }
             },
           ),
         ),
