@@ -53,13 +53,13 @@ dependencies:
   ext_storage:
   ffi:
   file_picker: ^1.9.0+1
-  firebase_core : ^1.1.1
-  firebase_analytics: ^8.0.4
-  firebase_crashlytics: ^2.0.3
+  # firebase_core : ^1.1.1
+  # firebase_analytics: ^8.0.4
+  # firebase_crashlytics: ^2.0.3
   flare_dart:
   flare_flutter: ^1.8.3
   flutter_colorpicker:
-  flutter_downloader:
+  # flutter_downloader:
   flutter_markdown:
   flutter_mobx:
   flutter_reorderable_list:

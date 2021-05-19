@@ -29,7 +29,7 @@ import 'package:violet/database/user/bookmark.dart';
 import 'package:violet/log/log.dart';
 import 'package:violet/other/dialogs.dart';
 import 'package:violet/locale/locale.dart';
-import 'package:violet/pages/community/user_status_card.dart';
+// import 'package:violet/pages/community/user_status_card.dart';
 import 'package:violet/pages/settings/db_rebuild_page.dart';
 import 'package:violet/pages/settings/import_from_eh.dart';
 import 'package:violet/pages/settings/license_page.dart';
@@ -143,7 +143,7 @@ class _SettingsPageState extends State<SettingsPage>
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.center,
             children: _themeGroup()
-              ..add(UserStatusCard())
+              // ..add(UserStatusCard())
               ..addAll(_searchGroup())
               ..addAll(_systemGroup())
               ..addAll(_databaseGroup())

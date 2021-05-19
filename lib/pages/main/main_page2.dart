@@ -11,7 +11,7 @@ import 'package:badges/badges.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_downloader/flutter_downloader.dart';
+// import 'package:flutter_downloader/flutter_downloader.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:lottie/lottie.dart';
@@ -82,7 +82,7 @@ class _MainPage2State extends State<MainPage2>
 
       // Update is not available for iOS.
       if (!Platform.isIOS) {
-        updateCheckAndDownload();
+        // updateCheckAndDownload();
       }
 
       if (SyncManager.syncRequire) {
@@ -728,80 +728,80 @@ class _MainPage2State extends State<MainPage2>
 
   ReceivePort _port = ReceivePort();
 
-  static void downloadCallback(
-      String id, DownloadTaskStatus status, int progress) {
-    final SendPort send =
-        IsolateNameServer.lookupPortByName('downloader_send_port');
-    send.send([id, status, progress]);
-  }
+  // static void downloadCallback(
+  //     String id, DownloadTaskStatus status, int progress) {
+  //   final SendPort send =
+  //       IsolateNameServer.lookupPortByName('downloader_send_port');
+  //   send.send([id, status, progress]);
+  // }
 
-  void updateCheckAndDownload() {
-    bool updateContinued = false;
-    Future.delayed(Duration(milliseconds: 100)).then((value) async {
-      if (UpdateSyncManager.updateRequire) {
-        var bb = await Dialogs.yesnoDialog(
-            context,
-            Translations.of(context).trans('newupdate') +
-                ' ' +
-                UpdateSyncManager.updateMessage +
-                ' ' +
-                Translations.of(context).trans('wouldyouupdate'));
-        if (bb == null || bb == false) return;
-      } else
-        return;
+  // void updateCheckAndDownload() {
+  //   bool updateContinued = false;
+  //   Future.delayed(Duration(milliseconds: 100)).then((value) async {
+  //     if (UpdateSyncManager.updateRequire) {
+  //       var bb = await Dialogs.yesnoDialog(
+  //           context,
+  //           Translations.of(context).trans('newupdate') +
+  //               ' ' +
+  //               UpdateSyncManager.updateMessage +
+  //               ' ' +
+  //               Translations.of(context).trans('wouldyouupdate'));
+  //       if (bb == null || bb == false) return;
+  //     } else
+  //       return;
 
-      if (!await Permission.storage.isGranted) {
-        if (await Permission.storage.request() == PermissionStatus.denied) {
-          await Dialogs.okDialog(context,
-              'If you do not allow file permissions, you cannot continue :(');
-          return;
-        }
-      }
-      updateContinued = true;
-      var ext = await getExternalStorageDirectory();
-      bool once = false;
-      IsolateNameServer.registerPortWithName(
-          _port.sendPort, 'downloader_send_port');
-      _port.listen((dynamic data) {
-        String id = data[0];
-        DownloadTaskStatus status = data[1];
-        int progress = data[2];
-        if (progress == 100 && !once) {
-          OpenFile.open(
-              '${ext.path}/${UpdateSyncManager.updateUrl.split('/').last}');
-          once = true;
-        }
-        setState(() {});
-      });
+  //     if (!await Permission.storage.isGranted) {
+  //       if (await Permission.storage.request() == PermissionStatus.denied) {
+  //         await Dialogs.okDialog(context,
+  //             'If you do not allow file permissions, you cannot continue :(');
+  //         return;
+  //       }
+  //     }
+  //     updateContinued = true;
+  //     var ext = await getExternalStorageDirectory();
+  //     bool once = false;
+  //     IsolateNameServer.registerPortWithName(
+  //         _port.sendPort, 'downloader_send_port');
+  //     _port.listen((dynamic data) {
+  //       String id = data[0];
+  //       DownloadTaskStatus status = data[1];
+  //       int progress = data[2];
+  //       if (progress == 100 && !once) {
+  //         OpenFile.open(
+  //             '${ext.path}/${UpdateSyncManager.updateUrl.split('/').last}');
+  //         once = true;
+  //       }
+  //       setState(() {});
+  //     });
 
-      FlutterDownloader.registerCallback(downloadCallback);
-      final taskId = await FlutterDownloader.enqueue(
-        url: UpdateSyncManager.updateUrl,
-        savedDir: '${ext.path}',
-        showNotification:
-            true, // show download progress in status bar (for Android)
-        openFileFromNotification:
-            true, // click on notification to open downloaded file (for Android)
-      );
-    }).then((value) async {
-      if (updateContinued) return;
-      if ((await SharedPreferences.getInstance())
-              .getBool('usevioletserver_check') !=
-          null) return;
+  //     FlutterDownloader.registerCallback(downloadCallback);
+  //     final taskId = await FlutterDownloader.enqueue(
+  //       url: UpdateSyncManager.updateUrl,
+  //       savedDir: '${ext.path}',
+  //       showNotification:
+  //           true, // show download progress in status bar (for Android)
+  //       openFileFromNotification:
+  //           true, // click on notification to open downloaded file (for Android)
+  //     );
+  //   }).then((value) async {
+  //     if (updateContinued) return;
+  //     if ((await SharedPreferences.getInstance())
+  //             .getBool('usevioletserver_check') !=
+  //         null) return;
 
-      var bb = await Dialogs.yesnoDialog(
-          context, Translations.of(context).trans('violetservermsg'));
-      if (bb == null || bb == false) return;
+  //     var bb = await Dialogs.yesnoDialog(
+  //         context, Translations.of(context).trans('violetservermsg'));
+  //     if (bb == null || bb == false) return;
 
-      await Settings.setUseVioletServer(true);
-      await (await SharedPreferences.getInstance())
-          .setBool('usevioletserver_check', false);
-    });
-  }
+  //     await Settings.setUseVioletServer(true);
+  //     await (await SharedPreferences.getInstance())
+  //         .setBool('usevioletserver_check', false);
+  //   });
+  // }
 
   @override
   void dispose() {
-    IsolateNameServer.removePortNameMapping('downloader_send_port');
+    // IsolateNameServer.removePortNameMapping('downloader_send_port');
     // TODO: implement dispose
     super.dispose();
   }
